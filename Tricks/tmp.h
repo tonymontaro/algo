@@ -1,12 +1,12 @@
 #include <bits/stdc++.h>
-//#include <atcoder/all>
 using namespace std;
 
 void fastInputOutput(){
     cin.tie(nullptr)->sync_with_stdio(false);
 }
 
-#define useFile() ifstream cin("../test_input.txt"); ofstream cout("../out.txt")
+#define usefile() ifstream cin("../test_input.txt"); /*ofstream cout("../out.txt");*/ std::cin.rdbuf(cin.rdbuf()); std::cout.rdbuf(cout.rdbuf())
+
 string delim = " ";
 #define print(x) cout << x << endl
 #define print2(x, y) cout << x << delim << y << endl
@@ -37,7 +37,6 @@ ll mpow(ll x, ll y, ll p) {
     ll res = 1;
     if (y == 0) return 1; x = x % p;  if (x == 0) return 0; // In case x is divisible by p;
     while (y > 0) {
-//        print3(y, res, x);
         if (y & 1)
             res = (res*x) % p;
         y = y>>1; // y = y/2
@@ -45,11 +44,9 @@ ll mpow(ll x, ll y, ll p) {
     }
     return res;
 }
-// same as count = __builtin_popcount((unsigned int) num);
+
 ll popcount(ll num) {
-    ll res = 0;
-    while (num > 0) { res += (1 & num); num >>= 1; }
-    return res;
+    return __builtin_popcount((unsigned int) num);
 }
 ll MOD = 1e9 + 7;
 
@@ -84,140 +81,80 @@ ll Combination(ll n, ll k) {
         res = res * (n - k + i) / i;
     return (ll)(res + 0.01);
 }
+vector<string> splitWord(string &s) {
+    istringstream iss(s, istringstream::in);
+    vector<string> words;
+    string word;
+    while (iss >> word) words.push_back(word);
+    return words;
+}
 
-
-class Solver {
-public:
-    void run() {
-        readInput();
-    }
-    ll n;
-    ll rlen, clen, row, col;
-    string s;
-    void readInput() {
-//        useFile();
-        int cases;
-        cin >> cases;
-        for (int case_id = 1; case_id < cases + 1; case_id++) {
-            cin >> n;
-            cin >> rlen >> clen >> row >> col;
-            cin >> s;
-            main();
-
-            cout << "Case #" << case_id << ": " << row << " " << col << endl;
-        }
-    }
-
-    ll answer;
-    void main() {
-        map<ll, map<ll, ll>> rows;
-        map<ll, map<ll, ll>> cols;
-        rows[row][col] = col;
-        cols[col][row] = row;
-        for (ll i = 0; i < n; i++) {
-            if (s[i] == 'E' || s[i] == 'W') {
-                col = getCol(rows, s[i]);
-            } else {
-                row = getRow(cols, s[i]);
-            }
-            setCol(rows);
-            setRow(cols);
-//            print3(row, col, "====");
-        }
-    }
-    ll getCol(map<ll, map<ll, ll>> &rows, char dir) {
-        map<ll, ll> &mp = rows[row];
-        auto it = mp.lower_bound(col);
-        if (it == mp.end() || it->first > col) it--;
-        if (dir == 'E') return it->second + 1;
-        else return it->first - 1;
-    }
-    void setCol(map<ll, map<ll, ll>> &rows) {
-        map<ll, ll> &mp = rows[row];
-        auto it = mp.lower_bound(col);
-        ll last = it->second;
-        if (it->first == col + 1) {
-            mp.erase(it);
-            mp[col] = last;
-        } else {
-            mp[col] = col;
-        }
-        auto prev = mp.lower_bound(col);
-        if (prev != mp.begin()) {
-            last = prev->second;
-            prev--;
-            if (prev->second == col - 1) {
-                ll first = prev->first;
-                mp.erase(col);
-                mp.erase(prev);
-                mp[first] = last;
-            }
-        }
-//        for (auto &x: mp) print2(x.first, x.second);
-    }
-    ll getRow(map<ll, map<ll, ll>> &cols, char dir) {
-        map<ll, ll> &mp = cols[col];
-        auto it = mp.lower_bound(row);
-        if (it == mp.end() || it->first > row) it--;
-        if (dir == 'S') return it->second + 1;
-        else return it->first - 1;
-    }
-    void setRow(map<ll, map<ll, ll>> &cols) {
-        map<ll, ll> &mp = cols[col];
-        auto it = mp.lower_bound(row);
-        ll last = it->second;
-        if (it->first == row + 1) {
-            mp.erase(it);
-            mp[row] = last;
-        } else {
-            mp[row] = row;
-        }
-        auto prev = mp.lower_bound(row);
-        if (prev != mp.begin()) {
-            last = prev->second;
-            prev--;
-            if (prev->second == row - 1) {
-                ll first = prev->first;
-                mp.erase(row);
-                mp.erase(prev);
-                mp[first] = last;
-            }
-        }
-//        for (auto &x: mp) print2(x.first, x.second);
-    }
-
-};
-
+// Given the probability of success = p
+// => expected number of trials until the first success = 1/p
+// article: https://atcoder.jp/contests/abc194/editorial/864
 class Solution {
 public:
-    int largestRectangleArea(vector<int>& heights) {
-        ll n = heights.size();
-        ll ans = 0;
-        vector<pair<ll, ll>> stk;
-        for (ll i = 0; i < heights.size(); i++) {
-            ll idx = i;
-            ll val = heights[i];
-            while (!stk.empty() && val <= stk.back().first) {
-                ans = max(ans, (stk.back().first * (i - stk.back().second)));
-                idx = stk.back().second;
-                stk.pop_back();
+    ll rlen, clen;
+    vector<vector<ll>> grid;
+    void run() {
+        cin >> rlen >> clen;
+        grid.resize(rlen, vector<ll>(clen));
+        for (ll i = 0; i < rlen; i++) {
+            string s; cin >> s;
+            for (ll j = 0; j < clen; j++) {
+                if (s[j] == '.') grid[i][j] = 0;
+                else grid[i][j] = 1;
             }
-            stk.push_back({val, idx});
         }
-        for (ll i = 0; i < stk.size(); i++) {
-            ans = max(ans, (stk[i].first * (n - stk[i].second)));
+        ll res = 0;
+        for (ll i = 2; i < 5; i++) {
+            res += solve(i);
+            rotate(grid);
         }
-        return ans;
+        res += solve(5);
+        print(res);
+    }
+    ll solve(ll d) {
+        print("start solve");
+        rlen = grid.size(), clen = grid[0].size();
+        ll res = 0;
+        for (ll r = 0; r < rlen; r++) {
+            for (int c = 0; c < clen; ++c ) {
+                if (grid[r][c] > 0 && grid[r][c] != d) {
+                    res++;
+                    while (r < rlen && grid[r][c] > 0) {
+                        grid[r][c] = d;
+                        r++;
+                    }
+                }
+            }
+        }
+        for (auto &x: grid) printArr(x);
+        print("========s====");
+        return res;
+    }
+    void rotate(vector<vector<ll>>& matrix) {
+        print("start rotate");
+        ll row = matrix.size(), col = matrix[0].size();
+        print2(row, col);
+        vector<vector<ll>> ans(col, vector<ll>(row));
+        for (ll r = 0; r < row; r++) {
+            for (ll c = 0; c < col; c++) {
+                ll cc = row - 1 - r;
+                ll rr = c;
+                ans[rr][cc] = matrix[r][c];
+            }
+        }
+        swap(grid, ans);
+        print("end rotate");
     }
 };
 
 int main(){
     fastInputOutput();
 
-
-    Solver sol;
-//    sol.run();
-
+    Solution sol;
+    sol.run();
 
     return 0;
 }
