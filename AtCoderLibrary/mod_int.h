@@ -1,4 +1,4 @@
-/*   Atcoder Library End   */
+/*   Atcoder Library Start   */
 
 
 #ifndef ATCODER_INTERNAL_MATH_HPP

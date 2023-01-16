@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+
 void fastInputOutput(){
     cin.tie(nullptr)->sync_with_stdio(false);
 }
@@ -12,11 +13,14 @@ string delim = " ";
 #define print2(x, y) cout << x << delim << y << endl
 #define print3(x, y, z) cout << x << delim << y << delim << z << endl
 
-
 template <typename T>
 void printArr(T &arr) {
     for (auto x: arr) cout << x << " ";
     cout << endl;
+}
+template <typename T>
+void printArr(vector<vector<T>> &arr) {
+    for (auto &x: arr) printArr(x);
 }
 string bin_string(long long num) {
     if (num == 0) return "0";
@@ -74,7 +78,10 @@ vector<vector<ll>> dirsDiag = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1
 #define pi pair<ll, ll>
 // get the bit set value at index idx
 #define bit(num, idx) ((num >> idx) & 1)
-
+void printArr(vector<pi> &arr) {
+    for (auto x: arr) cout << "(" << x.first << "," << x.second << ") ";
+    cout << endl;
+}
 ll Combination(ll n, ll k) {
     long double res = 1;
     for (int i = 1; i <= k; ++i)
@@ -89,72 +96,122 @@ vector<string> splitWord(string &s) {
     return words;
 }
 
-// Given the probability of success = p
-// => expected number of trials until the first success = 1/p
-// article: https://atcoder.jp/contests/abc194/editorial/864
+class Solution2 {
+public:
+    map<string, string> adj;
+    set<string> seen;
+    void run() {
+        ll n; cin >> n;
+        vector<string> arr;
+        for (ll i = 0; i < n; i++) {
+            string a, b; cin >> a >> b;
+            adj[a] = b;
+            arr.push_back(a);
+        }
+        for (ll i = 0; i < n; i++) {
+            string s = arr[i];
+            if (seen.find(s) == seen.end()) {
+                set<string> cur;
+                dfs(s, cur);
+            }
+        }
+        if (valid) print("Yes");
+        else{
+            print("No");}
+    }
+    bool valid = true;
+    void dfs(string &node, set<string> &cur) {
+//        print2(node, "===");
+
+        if (cur.find(node) != cur.end()) {
+            valid = false; return;
+        }
+        if (!valid || seen.find(node) != seen.end()) return;
+        seen.insert(node);
+        cur.insert(node);
+        if (adj.find(node) != adj.end())
+            dfs(adj[node], cur);
+    }
+};
+
 class Solution {
 public:
-    ll rlen, clen;
-    vector<vector<ll>> grid;
-    void run() {
-        cin >> rlen >> clen;
-        grid.resize(rlen, vector<ll>(clen));
-        for (ll i = 0; i < rlen; i++) {
-            string s; cin >> s;
-            for (ll j = 0; j < clen; j++) {
-                if (s[j] == '.') grid[i][j] = 0;
-                else grid[i][j] = 1;
-            }
+    vector<set<ll>> adj;
+    vector<vector<ll>> valNodes;
+    vector<ll> seen;
+    ll n;
+    int numberOfGoodPaths(vector<int>& vals, vector<vector<int>>& edges) {
+        n = vals.size();
+        adj.resize(n );
+        seen.resize(n );
+        for (auto &x: edges) {
+            ll a = x[0], b = x[1];
+            adj[a].insert(b);
+            adj[b].insert(a);
         }
-        ll res = 0;
-        for (ll i = 2; i < 5; i++) {
-            res += solve(i);
-            rotate(grid);
-        }
-        res += solve(5);
-        print(res);
-    }
-    ll solve(ll d) {
-        print("start solve");
-        rlen = grid.size(), clen = grid[0].size();
-        ll res = 0;
-        for (ll r = 0; r < rlen; r++) {
-            for (int c = 0; c < clen; ++c ) {
-                if (grid[r][c] > 0 && grid[r][c] != d) {
-                    res++;
-                    while (r < rlen && grid[r][c] > 0) {
-                        grid[r][c] = d;
-                        r++;
-                    }
+        ll mxVal = *max_element(vals.begin(), vals.end());
+        valNodes.resize(mxVal + 1);
+        for (ll i = 0; i < n; i++) valNodes[vals[i]].push_back(i);
+        ll ans = 0;
+        print2(n, count(3, -1));
+        for (ll i = 0; i <= mxVal; i++) {
+            for (auto node: valNodes[i]) {
+                if (seen[node]) continue;
+                print("-----------");
+                vector<ll> holder;
+                ll res = dfs(node, -1, holder, vals);
+                ans += ((res + 1) * res) / 2;
+                print2("holder size:   ", holder.size());
+//                printArr(holder);
+//                return 0;
+                if (holder.empty()) continue;
+                ll a = holder[0];
+                for (ll j = 1; j < holder.size(); j++) {
+                    ll b = holder[j];
+                    adj[a].insert(b);
+                    adj[b].insert(a);
                 }
+                print2(count(3, -1), "---------");
             }
         }
-        for (auto &x: grid) printArr(x);
-        print("========s====");
+        return ans;
+    }
+    ll dfs(ll node, ll parent, vector<ll> &holder, vector<int>& vals) {
+        print2(vals[node], node);
+        ll res = 1;
+        seen[node] = 1;
+        for (auto child: adj[node]) {
+            if (child == parent) continue;
+            if (vals[child] > vals[node]) {
+//                for (auto x: adj[child]) cout << "." << x << ".";
+//                cout << endl;
+                adj[child].erase(node);
+//                for (auto x: adj[child]) cout << "." << x << ".";
+//                cout << endl;
+                holder.push_back(child);
+            } else {
+                res += dfs(child, node, holder, vals);
+            }
+        }
+
         return res;
     }
-    void rotate(vector<vector<ll>>& matrix) {
-        print("start rotate");
-        ll row = matrix.size(), col = matrix[0].size();
-        print2(row, col);
-        vector<vector<ll>> ans(col, vector<ll>(row));
-        for (ll r = 0; r < row; r++) {
-            for (ll c = 0; c < col; c++) {
-                ll cc = row - 1 - r;
-                ll rr = c;
-                ans[rr][cc] = matrix[r][c];
-            }
-        }
-        swap(grid, ans);
-        print("end rotate");
+    ll count(ll node, ll parent) {
+        ll res = 1;
+        for (auto child: adj[node]) if (child != parent) res += count(child, node);
+        return res;
     }
 };
 
 int main(){
     fastInputOutput();
+//    usefile();
 
     Solution sol;
-    sol.run();
+    vector<int> vals = {1,4,11,19,14,11,12,18,9,15,18,9,11,1,18,8,10,13,3,17,1,10,11,15,11,19,2};
+    vector<vector<int>> edges = {{0,1},{0,2},{3,0},{4,3},{0,5},{2,6},{7,4},{4,8},{9,2},{10,0},{3,11},{1,12},{5,13},{6,14},{6,15},{16,0},{14,17},{12,18},{19,6},{20,17},{14,21},{12,22},{23,20},{24,11},{25,15},{26,7}};
+    print(sol.numberOfGoodPaths(vals, edges));
+//    sol.run();
 
     return 0;
 }

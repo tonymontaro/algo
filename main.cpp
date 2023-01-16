@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+
 void fastInputOutput(){
     cin.tie(nullptr)->sync_with_stdio(false);
 }
@@ -12,11 +13,14 @@ string delim = " ";
 #define print2(x, y) cout << x << delim << y << endl
 #define print3(x, y, z) cout << x << delim << y << delim << z << endl
 
-
 template <typename T>
 void printArr(T &arr) {
     for (auto x: arr) cout << x << " ";
     cout << endl;
+}
+template <typename T>
+void printArr(vector<vector<T>> &arr) {
+    for (auto &x: arr) printArr(x);
 }
 string bin_string(long long num) {
     if (num == 0) return "0";
@@ -74,7 +78,10 @@ vector<vector<ll>> dirsDiag = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1
 #define pi pair<ll, ll>
 // get the bit set value at index idx
 #define bit(num, idx) ((num >> idx) & 1)
-
+void printArr(vector<pi> &arr) {
+    for (auto x: arr) cout << "(" << x.first << "," << x.second << ") ";
+    cout << endl;
+}
 ll Combination(ll n, ll k) {
     long double res = 1;
     for (int i = 1; i <= k; ++i)
@@ -89,43 +96,128 @@ vector<string> splitWord(string &s) {
     return words;
 }
 
+class Solution2 {
+public:
+    void run() {
+    }
+};
+
+class UnionFind {
+    /*
+    UnionFind or DisjollSet data-structure with Path compression. Zero indexed.
+    Initialize:
+            UnionFind(n)
+            Methods:
+    unify(p, q)        # unify p and q
+    connected(p, q)    # is p connected to q (return bool)
+    find(p)            # find the parent of q
+    getSize(p)         # return the group size of p
+    */
+private:
+    ll size = 0;
+    ll* sizes;
+    ll* parents;
+public:
+    ll groups;
+    UnionFind(ll n) {
+        size = n;
+        groups = n;
+        sizes = new ll[size];
+        parents = new ll[size];
+        for(ll i=0; i < size; i++) {
+            parents[i] = i;
+            sizes[i] = 1;
+        }
+    }
+    ~UnionFind() {
+        delete [] sizes;
+        delete [] parents;
+    }
+
+    ll find(ll p) {
+        assert(p >= 0 && p < size);
+        ll root = p;
+        while (root != parents[root])
+            root = parents[root];
+
+        // path compression
+        while (p != root) {
+            ll tmp = parents[p];
+            parents[p] = root;
+            p = tmp;
+        }
+        return root;
+    }
+    ll getSize(ll p) {
+        return sizes[find(p)];
+    }
+
+    bool connected(ll p, ll q){
+        return find(p) == find(q);
+    }
+    bool unify(ll p, ll q) {
+        assert(p >= 0 && p < size);
+        assert(q >= 0 && q < size);
+        ll root1 = find(p);
+        ll root2 = find(q);
+        if (root1 == root2) return false;
+        if (sizes[root1] < sizes[root2]){
+            parents[root1] = root2;
+            sizes[root2] += sizes[root1];
+        } else {
+            parents[root2] = root1;
+            sizes[root1] += sizes[root2];
+        }
+        groups -= 1;
+        return true;
+    }
+};
 
 class Solution {
 public:
-    void run() {
-        // Question: https://atcoder.jp/contests/abc197/tasks/abc197_d
-        // Helpful vid: https://www.youtube.com/watch?v=Rv5D_GQIIek
-        // Formula for rotating a vector in 2D: https://matthew-brett.github.io/teaching/rotation_2d.html
-        // Assuming x, y represents a vector at that point with 0, 0 as the origin, we can use the formula below to rotate the vector by R degrees (in radian). The new vector will be x1, y1
-        // x1 = cos(R) * x - sin(R) * y;
-        // y1 = sin(R) * x + cos(R) * y;
-        // we can inscribe the polygon within a circle. The radius is easy to find from the input.
-        // using the center of the circle as the origin; x0, y0 is a vector which we will rotate by 360/n or (2 * pi)/n to get to x1, y1
-        // 360 / n because each vertex of the regular n sided polygon divides the circle equally.
-        lb n; cin >> n;
-        lb x0, y0; cin >> x0 >> y0;
-        lb xh, yh; cin >> xh >> yh;
-        lb cx = (x0 + xh) / 2;
-        lb cy = (y0 + yh) / 2;
-        // let's assume x0, y0 is a vector with cx, cy as origin. Now translate this vector to x, y with 0,0 as origin
-        lb x = x0 - cx;
-        lb y = y0 - cy;
-        lb p = M_PI;
-        // computing x1, y1 (with 0,0 as origin) using the formula
-        lb x1 = (cos((2 * p / n)) * x - sin((2 * p / n)) * y);
-        lb y1 = (sin(2 * p / n) * x + cos(2 * p / n) * y);
-        // translating the vector back with cx, cy as origin
-        x1 += cx;
-        y1 += cy;
-        cout << setprecision(10) << fixed << x1 << " " << y1 << endl;
+    vector<set<ll>> adj;
+    vector<vector<ll>> valNodes;
+    vector<ll> seen;
+    ll n;
+    int numberOfGoodPaths(vector<int>& vals, vector<vector<int>>& edges) {
+        n = vals.size();
+        adj.resize(n );
+        seen.resize(n );
+        UnionFind uf(n);
+        for (auto &x: edges) {
+            ll a = x[0], b = x[1];
+            adj[a].insert(b);
+            adj[b].insert(a);
+        }
+        ll mxVal = *max_element(vals.begin(), vals.end());
+        valNodes.resize(mxVal + 1);
+        for (ll i = 0; i < n; i++) valNodes[vals[i]].push_back(i);
+        ll ans = 0;
+        for (ll i = 0; i <= mxVal; i++) {
+            if (valNodes[i].empty()) continue;
+            for (auto node: valNodes[i]) {
+                seen[node] = 1;
+                for (auto child: adj[node]) if (seen[child]) uf.unify(node, child);
+            }
+            map<ll, ll> cnt;
+            for (auto node: valNodes[i]) cnt[uf.find(node)]++;
+            for (auto x: cnt) {
+                ans += (x.second * (x.second + 1)) /2;
+            }
+        }
+        return ans;
     }
 };
 
 int main(){
     fastInputOutput();
+//    usefile();
 
     Solution sol;
-    sol.run();
+    vector<int> vals = {1,4,11,19,14,11,12,18,9,15,18,9,11,1,18,8,10,13,3,17,1,10,11,15,11,19,2};
+    vector<vector<int>> edges = {{0,1},{0,2},{3,0},{4,3},{0,5},{2,6},{7,4},{4,8},{9,2},{10,0},{3,11},{1,12},{5,13},{6,14},{6,15},{16,0},{14,17},{12,18},{19,6},{20,17},{14,21},{12,22},{23,20},{24,11},{25,15},{26,7}};
+    print(sol.numberOfGoodPaths(vals, edges));
+//    sol.run();
 
     return 0;
 }
