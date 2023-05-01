@@ -1,14 +1,49 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-class Trie {
-public:
-    struct Trie* c[27];
-    vector<string> suggestions;
-    Trie() {
-        for (auto & i : c) i = nullptr;
-    }
+#define ll long long
+#define pi pair<ll, ll>
+#define tpp tuple<ll, ll, ll>
+
+struct Trie {
+    map<ll, Trie*> kids;
+    bool wordEnd = false;
 };
+class TrieManager {
+public:
+    void add(string &s) {
+        Trie *node = root;
+        for (ll i = 0; i < s.size(); i++) {
+            ll c = s[i];
+            if (node->kids.find(c) == node->kids.end())
+                node->kids[c] = new Trie();
+            node = node->kids[c];
+        }
+        node->wordEnd = true;
+    }
+    bool contains(string &s) {
+        Trie *node = root;
+        for (ll i = 0; i < s.size(); i++) {
+            ll c = s[i];
+            if (node->kids.find(c) == node->kids.end())
+                return false;
+            node = node->kids[c];
+        }
+        return node->wordEnd;
+    }
+private:
+    Trie* root = new Trie;
+};
+
+
+//class Trie {
+//public:
+//    struct Trie* c[27];
+//    vector<string> suggestions;
+//    Trie() {
+//        for (auto & i : c) i = nullptr;
+//    }
+//};
 
 int main() {
     // usage

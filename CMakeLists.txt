@@ -3,4 +3,4 @@ project(csescpp)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(csescpp main.cpp AtCoderLibrary/SCC_strongly_connected_components.h AtCoderLibrary/string.h AtCoderLibrary/segment_tree.h AtCoderLibrary/lazy_segment_tree.h AtCoderLibrary/mod_int.h Geometry/Rotate_Matrix_90_Degree.h ProblemAnalysis/Instructive/Geometry/Rotate_A_Vector_and_Translate_To_Origin.h ProblemAnalysis/Instructive/Geometry/Rotate_And_Flip_ABC189_Applying_transformations_to_points_using_unit_vectors.h Maths/Check_POW_overflow_using_Logirithm.h Maths/General_Math_tricks.h Strings/Rabin_Karp_my_impl.h)
+add_executable(csescpp main.cpp)
