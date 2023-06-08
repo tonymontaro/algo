@@ -24,6 +24,7 @@ template <typename T>
 void printArr(vector<vector<T>> &arr) {
     for (auto &x: arr) printArr(x);
 }
+
 string bin_string(long long num) {
     if (num == 0) return "0";
     string res = "";
@@ -73,6 +74,8 @@ map<ll, ll> coordCompress(vector<ll> &arr) {
 #define tp tuple<ll, ll, ll>
 vector<vector<ll>> dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // right, down, left, up
 vector<vector<ll>> dirsDiag = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+ll strHashMult = 911382323;
+ll strHashMod = 972663749;
 
 //using lm = ::atcoder::modint1000000007;
 #define ll long long
@@ -101,30 +104,19 @@ vector<string> splitWord(string &s) {
 //using lm = ::atcoder::modint998244353;
 
 
+
 #define ll long long
 #define lb long double
 #define pi pair<ll, ll>
 #define tpp tuple<ll, ll, ll>
 
-ll mod;
-
-
 class Solution {
 public:
     void run() {
-        MatrixPower mp;
-        ll r, n; cin >> r >> n >> mod;
-        if (mod == 1 ) {
-            print(0); return;
-        }
-        r %= mod;
-        vector<vector<ll>> A = {{r, 1}, {0, 1}};
-        if (n > 1)
-            A = mp.power(A, n);
-        ll res = A[0][1];
-        print(res);
+        print("ready");
     }
 };
+
 
 int main(){
     fastInputOutput();
@@ -135,3 +127,4 @@ int main(){
 
     return 0;
 }
+
