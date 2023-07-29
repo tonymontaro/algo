@@ -77,7 +77,7 @@ public:
         }
         auto &last = bits[idx];
         ll res = 0;
-        for (ll i = 0; i < MX_BIT-2; i++) {
+        for (ll i = 0; i < MX_BIT; i++) {
             if (last[i]) {
                 ll rs = mpow(2, i, MOD);
                 res = (res + rs) % MOD;
