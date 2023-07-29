@@ -5,17 +5,22 @@ using namespace std;
 #define pi pair<ll, ll>
 #define tpp tuple<ll, ll, ll>
 
+
 struct Trie {
-    map<ll, Trie*> kids;
+    Trie* kids[26];
     bool wordEnd = false;
+    Trie() {
+        for (auto &x: kids) x = nullptr;
+    }
 };
 class TrieManager {
+    // supports lowercase OR uppercase alphabets
 public:
     void add(string &s) {
         Trie *node = root;
         for (ll i = 0; i < s.size(); i++) {
-            ll c = s[i];
-            if (node->kids.find(c) == node->kids.end())
+            ll c = s[i]-'a';
+            if (!node->kids[c])
                 node->kids[c] = new Trie();
             node = node->kids[c];
         }
@@ -25,7 +30,7 @@ public:
         Trie *node = root;
         for (ll i = 0; i < s.size(); i++) {
             ll c = s[i];
-            if (node->kids.find(c) == node->kids.end())
+            if (!node->kids[c])
                 return false;
             node = node->kids[c];
         }
