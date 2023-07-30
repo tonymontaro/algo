@@ -25,9 +25,9 @@ ll mpow(ll x, ll y, ll p) {
 class Compare {
 public:
     bool operator() (bitset<MX_BIT> & a, bitset<MX_BIT> & b) {
-        return compare(a, b);
+        return isAsmallerThanB(a, b);
     }
-    static bool compare (bitset<MX_BIT> & a, bitset<MX_BIT> & b) {
+    static bool isAsmallerThanB (bitset<MX_BIT> & a, bitset<MX_BIT> & b) {
 
         const uint64_t * p = (const uint64_t *)(&a);
         const uint64_t * q = (const uint64_t *)(&b);
@@ -46,7 +46,7 @@ class Solution {
 public:
     ll n, m;
     void run() {
-        cin >> n >> m;
+        cin >> n >> m; // m <= 20
         vector<ll> arr(n);
         for (ll i = 0; i < n; i++) cin >> arr[i];
         sort(arr.begin(), arr.end(), greater<>());
@@ -56,12 +56,8 @@ public:
             a.set(arr[i]);
             bits[i] = a;
         }
-
         for (ll i = m; i < n; i++) {
-            ll idx = 0;
-            for (ll j = 0; j < m; j++) {
-                if (Compare::compare(bits[j], bits[idx])) idx = j;
-            }
+            ll idx = findSmallestBitmask(bits);
             for (ll j = arr[i]; j < MX_BIT; j++) {
                 if (bits[idx][j]) {
                     bits[idx][j] = false;
@@ -71,10 +67,7 @@ public:
                 }
             }
         }
-        ll idx = 0;
-        for (ll j = 0; j < m; j++) {
-            if (Compare::compare(bits[idx], bits[j])) idx = j;
-        }
+        ll idx = findLargestBitmask(bits);
         auto &last = bits[idx];
         ll res = 0;
         for (ll i = 0; i < MX_BIT; i++) {
@@ -85,7 +78,35 @@ public:
         }
         cout << res << endl;
     }
+    ll findSmallestBitmask(vector<bitset<MX_BIT>> &bits) {
+        ll idx = 0;
+        for (ll j = 0; j < m; j++) { // at most 20
+            if (Compare::isAsmallerThanB(bits[j], bits[idx])) idx = j;
+        }
+        return idx;
+    }
+    ll findLargestBitmask(vector<bitset<MX_BIT>> &bits) {
+        ll idx = 0;
+        for (ll j = 0; j < m; j++) {
+            if (Compare::isAsmallerThanB(bits[idx], bits[j])) idx = j;
+        }
+        return idx;
+    }
 };
+
+/*
+
+ [8, 8, 4, 4, 4, 2, 2]
+ [3, 3, 2, 2, 2, 1, 1]
+
+{
+ 1000
+ 1000
+ 1000
+ 1000
+ }
+
+ */
 
 int main(){
     fastInputOutput();
