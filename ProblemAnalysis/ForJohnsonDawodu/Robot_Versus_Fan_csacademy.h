@@ -6,6 +6,8 @@ void fastInputOutput() { cin.tie(nullptr)->sync_with_stdio(false); }
 #define ll long long
 #define pi pair<ll, ll>
 
+// Question: https://csacademy.com/ieeextreme-practice/task/robot-versus-fan/statement/
+
 class Solution {
 public:
     ll n;
