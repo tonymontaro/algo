@@ -1,88 +1,128 @@
 #include <bits/stdc++.h>
+#include <atcoder/all>
+using namespace atcoder;
 using namespace std;
 
 void fastInputOutput() { cin.tie(nullptr)->sync_with_stdio(false); }
+
+
+#define usefile()                                                     \
+  ifstream cin("../test_input.txt"); /*ofstream cout("../out.txt");*/ \
+  std::cin.rdbuf(cin.rdbuf());                                        \
+  std::cout.rdbuf(cout.rdbuf())
+
+string delim = " ";
 #define print(x) cout << x << endl
+#define print2(x, y) cout << x << delim << y << endl
+#define print3(x, y, z) cout << x << delim << y << delim << z << endl
+
+template <typename T>
+void printArr(T &arr) {
+    for (auto x : arr) cout << x << " ";
+    cout << endl;
+}
+template <typename T>
+void printArr(vector<vector<T>> &arr) {
+    for (auto &x : arr) printArr(x);
+}
+
+string bin_string(long long num) {
+    if (num == 0) return "0";
+    string res = "";
+    while (num > 0) {
+        res += (num & 1) + '0';
+        num >>= 1;
+    }
+    reverse(res.begin(), res.end());
+    print(res);
+    return res;
+}
+
+#define ll long long
+#define lb long double
+const int INF = (int)2e9;
+const ll LINF = (ll)4e18;
+ll mpow(ll x, ll y, ll p) {
+    ll res = 1;
+    if (y == 0) return 1;
+    x = x % p;
+    if (x == 0) return 0;  // In case x is divisible by p;
+    while (y > 0) {
+        if (y & 1) res = (res * x) % p;
+        y = y >> 1;  // y = y/2
+        x = (x * x) % p;
+    }
+    return res;
+}
+
+ll popcount(ll num) { return __builtin_popcount((unsigned int)num); }
+
+ll hashNum(ll a) { return a * (a + 1346) * (a + 9185); }
+void extendVector(vector<ll> &v, vector<ll> &other) {
+    for (auto val : other) v.push_back(val);
+}
+map<ll, ll> coordCompress(vector<ll> &arr) {
+    set<ll> st(arr.begin(), arr.end());
+    map<ll, ll> mp;
+    ll idx = 1;
+    for (auto &x : st) mp[x] = idx++;
+    return mp;
+}
+
+#define tp tuple<ll, ll, ll>
+vector<vector<ll>> dirs = {
+        {0, 1}, {1, 0}, {0, -1}, {-1, 0}};  // right, down, left, up
+vector<vector<ll>> dirsDiag = {{0, 1},  {1, 1},   {1, 0},  {1, -1},
+                               {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+ll strHashMult = 911382323;
+ll strHashMod = 972663749;
+
+// using lm = ::atcoder::modint1000000007;
 #define ll long long
 #define pi pair<ll, ll>
+// get the bit set value at index idx
+#define bit(num, idx) ((num >> idx) & 1)
+void printArr(vector<pi> &arr) {
+    for (auto x : arr) cout << "(" << x.first << "," << x.second << ") ";
+    cout << endl;
+}
+ll Combination(ll n, ll k) {
+    long double res = 1;
+    for (int i = 1; i <= k; ++i) res = res * (n - k + i) / i;
+    return (ll)(res + 0.01);
+}
+vector<string> splitWord(string &s) {
+    istringstream iss(s, istringstream::in);
+    vector<string> words;
+    string word;
+    while (iss >> word) words.push_back(word);
+    return words;
+}
 
-class Solution {
+// using lm = ::atcoder::modint1000000007;
+using lm = ::atcoder::modint998244353;
+
+
+#define ll long long
+#define lb long double
+#define pi pair<ll, ll>
+#define tpp tuple<ll, ll, ll>
+ll MOD = 1e9 + 7;
+
+class Solution{
 public:
-    ll n;
-    vector<string> grid;
-    map<pi, ll> circle; // {r,c} -> distance
-    map<pi, ll> dist; // {r, c} -> distance
-    map<ll, ll> circleStartTimes;
-    ll k;
-    void run() {
-        cin >> n;
-        grid.resize(n);
+    long long int countStrings(string &s){
+        vector<ll> prev(26);
+        ll n = s.size();
+        ll total = 0;
+        ll answer = 1;
         for (ll i = 0; i < n; i++) {
-            cin >> grid[i];
+            ll id = s[i] - 'a';
+            answer += total - prev[id];
+            total++;
+            prev[id]++;
         }
-        cin >> k;
-        computeDist();
-        ll idx = 0;
-        ll ans = -1;
-        for (ll i = 0; i < k; i++) {
-            pi tmp;
-            cin >> tmp.first >> tmp.second;
-            ll res = check(tmp, idx++);
-            if (res == -1) continue;
-            if (ans == -1 || ans > res) ans = res;
-        }
-        print((ans == -1 ? "never" : to_string(ans)));
-    }
-    ll check(pi cord, ll d) {
-        // normal check
-        if (dist.find(cord) == dist.end()) return -1;
-        ll dd = dist[cord];
-        if (dd % k == d) return dd;
-
-        // check in the cycle
-        if (circle.find(cord) == circle.end()) return -1;
-        ll sz = circle[cord];
-        ll mult = (sz / k) + 2;
-        ll start = (d - sz + (k * mult)) % k;
-        if (circleStartTimes.find(start) == circleStartTimes.end()) return -1;
-        return circleStartTimes[start] + sz;
-    }
-    void computeDist() {
-        ll r = 0, c = 0;
-        ll d  = 0;
-        vector<pi> arr;
-        while (true) {
-            if (dist.find({r, c}) != dist.end()) {
-                // we are in a cycle, handle it.
-                pi tmp = {r, c};
-                for (ll i = 0; i < arr.size(); i++) {
-                    if (arr[i] != tmp) continue;
-                    ll sz = arr.size() - i;
-                    ll startTime = d - sz;
-                    computeCycleDistances(i, sz, startTime, arr);
-                    break;
-                }
-                break;
-            }
-            arr.push_back({r, c});
-            dist[{r, c}] = d++;
-            if (grid[r][c] == '>') c++;
-            else if (grid[r][c] == '<') c--;
-            else if (grid[r][c] == 'v') r++;
-            else if (grid[r][c] == '^') r--;
-        }
-    }
-    void computeCycleDistances(ll startIdx, ll sz, ll startTime, vector<pi> &arr) {
-        ll idx = startTime % k;
-        while (circleStartTimes.find(idx) == circleStartTimes.end()) {
-            circleStartTimes[idx] = startTime;
-            idx = (idx + sz) % k;
-            startTime += sz;
-        }
-        idx = 0;
-        for (ll j = startIdx; j < arr.size(); j++) {
-            circle[arr[j]] = idx++;
-        }
+        return answer;
     }
 };
 
@@ -90,12 +130,9 @@ int main(){
     fastInputOutput();
 //    usefile();
 
-    int cases;
-    cin >> cases;
-    for (int case_id = 1; case_id < cases + 1; case_id++) {
-        Solution sol;
-        sol.run();
-    }
+    Solution sol;
+    string s = "aaaaaa";
+    print(sol.countStrings(s));
 
     return 0;
 }
