@@ -113,8 +113,9 @@ public:
             ll cost, a, b, upgrade;
             for (auto &edge: edges) {
                 tie(cost, a, b, upgrade) = edge;
-                if (upgrade && selected.find(a) == selected.end() && selected.find(b) == selected.end())
-                    continue;
+                bool shouldSkipEdge =
+                        upgrade && selected.find(a) == selected.end() && selected.find(b) == selected.end();
+                if (shouldSkipEdge) continue;
                 edgesToProcess.push_back({cost, a, b});
             }
             ll res = computeCost(edgesToProcess, upgradeCost);
@@ -130,7 +131,7 @@ public:
             mp[s] = totalNodes++;
         return mp[s];
     }
-    ll computeCost(vector<tpp> edges, ll upgradeCost) {
+    ll computeCost(vector<tpp> &edges, ll upgradeCost) { // minimum spanning tree algorithm
         sort(edges.begin(), edges.end());  // tpp -> cost, edgeA, edgeB
         UnionFind uf(totalNodes);
         ll totalCost = 0;
@@ -154,3 +155,16 @@ int main(){
 
     return 0;
 }
+/*
+00
+01
+10
+11
+
+ 3 => 2^3
+
+ 000000
+ 000110
+
+ *
+ */

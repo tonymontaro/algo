@@ -9,6 +9,7 @@ using namespace std;
 
 class FenwickTree {
     // One indexed Binary Indexed Tree.
+    // (i & -i) => least significant bit
 public:
     int n;
     vector<ll> tree;

@@ -4,7 +4,7 @@ using namespace std;
 
 class UnionFind {
     /*
-    UnionFind or DisjollSet data-structure with Path compression. Zero indexed.
+    UnionFind or DisjointSet data-structure with Path compression. Zero indexed.
     Initialize:
             UnionFind(n)
             Methods:
