@@ -79,6 +79,7 @@ public:
     }
 };
 
+// Question: https://csacademy.com/ieeextreme-practice/task/wireless-network/statement/
 class Solution{
 public:
     ll COST_TO_UPGRADE = 10000;

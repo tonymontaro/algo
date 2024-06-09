@@ -9,21 +9,21 @@ using namespace std;
 
 class FenwickTree {
     // One indexed Binary Indexed Tree.
-    // (i & -i) => least significant bit
+    // (i & -i) => the least significant bit
 public:
     int n;
     vector<ll> tree;
-    FenwickTree(int num){
+    FenwickTree(ll num){
         n = num;
         tree = vector<ll>(n + 1);
     }
-    void update(int index, ll value){
-        for (int i = index; i <= n; i += (i & -i))
+    void update(ll index, ll value){
+        for (ll i = index; i <= n; i += (i & -i))
             tree[i] += value;
     }
-    ll query(int index){
+    ll query(ll index){
         ll total = 0;
-        for (int i = index; i > 0; i -= (i & -i))
+        for (ll i = index; i > 0; i -= (i & -i))
             total += tree[i];
         return total;
     }

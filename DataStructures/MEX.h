@@ -35,3 +35,11 @@ public:
         missing_numbers.erase(new_value);
     }
 };
+
+// Example Linear mex : https://atcoder.jp/contests/agc063/submissions/43905662
+void linear_mex() {
+    ll N;
+    vector<bool> used(N);
+    int mex = 0;
+    while (used[mex]) ++mex;
+}

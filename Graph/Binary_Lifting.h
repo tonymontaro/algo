@@ -4,13 +4,14 @@ using namespace std;
 
 #define ll long long
 
+// NOTE: Use the class in Lowest_Common_Anscentor.h instead.
 // https://www.youtube.com/watch?v=oib-XsjFa-M&ab_channel=ErrichtoAlgorithms
 // problem: https://leetcode.com/problems/kth-ancestor-of-a-tree-node/description/
 class TreeAncestor {
 public:
     int ansc[50001][17];
     int n;
-    int mx = 16;
+    int mx = 16; // LOG(n)
     TreeAncestor(int nn, vector<int>& parent) {
         n = nn;
         for (int i = 0; i < n; i++) ansc[i][0] = parent[i];

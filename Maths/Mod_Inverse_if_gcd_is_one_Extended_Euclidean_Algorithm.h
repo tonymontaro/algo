@@ -4,7 +4,15 @@ using namespace std;
 
 class ModInverse {
 public:
-    // Function to find modulo inverse of a NOTE: provided gcd(a, M) == 1
+    // Function to find modulo inverse of A provided gcd(A, M) == 1
+    /*
+     * Explanation: let 1 = xA + yM
+     *  1 % M = (xA) % M + (yM) % M
+     *  since M % M = 0, this simplifies to 1 % M = (xA) % M
+     *  therefore x is the multiplicative inverse on A under mod M
+     *  Now, we can find x using Extended Euclidean Algorithm as explained
+     *  in this video: https://www.youtube.com/watch?v=hB34-GSDT3k
+     */
     ll modInverse(ll A, ll M) {
         ll x, y;
         ll g = gcdExtended(A, M, &x, &y);

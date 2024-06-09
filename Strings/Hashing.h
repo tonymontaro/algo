@@ -1,6 +1,22 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// Good Example: https://atcoder.jp/contests/abc284/tasks/abc284_f
+// My submission: https://atcoder.jp/contests/abc284/submissions/49896944
+/*
+Using AtCoder ModInt Lib makes it very easy to compute string hashes. Idea:
+lm pw = 1;
+lm mult = 130;
+string s = "tobehashed";
+vector<lm> hashes(n);
+for (ll i = 0; i <= n; i++) {
+   hashes[i] = s[i] * pw;
+   if (i > 0) hashes[i] += hashes[i-1];
+}
+
+ */
+
+
 // https://cp-algorithms.com/string/string-hashing.html -> Fast hash calculation of substrings of given string
 namespace Hashing {
     #define ll long long
