@@ -1,3 +1,4 @@
+// start date (2024 gravel b-plan): 11 June, 2024
 #include <bits/stdc++.h>
 
 //#include <atcoder/all>
@@ -144,8 +145,8 @@ class Solution {
 public:
     ll n, m, q, k;
     ll rlen, clen;
-    void run(){
-        print("ready.");
+    void run() {
+
     }
 };
 

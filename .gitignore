@@ -6,4 +6,4 @@ main
 .vscode/
 test_input.txt
 out.txt
-
+CMakeLists.txt
