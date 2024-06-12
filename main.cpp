@@ -146,7 +146,7 @@ public:
     ll n, m, q, k;
     ll rlen, clen;
     void run() {
-
+        print("ready");
     }
 };
 

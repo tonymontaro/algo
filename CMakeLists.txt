@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.21)
+project(csescpp)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(csescpp main.cpp Graph/TopologicalSort.h ProblemAnalysis/Instructive/DP/DP_log_optimazation_E_RLE_atcoderABC249.h ProblemAnalysis/Instructive/DP/Nice_mental_solution_Keep_Connect_atcoderABC248.h ProblemAnalysis/ForJohnsonDawodu/Robot_Versus_Fan_csacademy.h ProblemAnalysis/ForJohnsonDawodu/Wireless_Network_csacademy.h ProblemAnalysis/Instructive/Probability/Sum_of_infinite_geometric_probability_archer_cf_185B.h Graph/Binary_Lifting.h ProblemAnalysis/ForJohnsonDawodu/ANDman_csacademy.h)
